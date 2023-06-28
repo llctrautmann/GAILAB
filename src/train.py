@@ -43,7 +43,6 @@ optimiser = optim.AdamW(model.parameters(),lr=LR_RATE)
 loss_fn = nn.MSELoss(reduction="mean")
 
 
-
 # Training Loop
 for epoch in range(NUM_EPOCHS):
     print(f'Epoch {epoch} has started.')
