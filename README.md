@@ -59,10 +59,3 @@ Contributions to this project are welcome. If you would like to contribute, plea
 
 This project is licensed under the [MIT License](LICENSE). Please refer to the license file for more information.
 
-## References
-
-[1] *[Insert Reference Title]*  
-[2] *[Insert Reference Title]*  
-[3] *[Insert Reference Title]*
-
-Please replace *[Insert Reference Title]* with the appropriate citations for the scientific papers or resources referenced in the project description.

@@ -1,5 +1,5 @@
 .venv
 Profiler
 profiler
-data
+data/*
 
