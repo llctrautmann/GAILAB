@@ -50,9 +50,7 @@ Contributions to this project are welcome. If you would like to contribute, plea
 
 1. Fork the repository and create a new branch for your contribution.
 2. Make your changes or additions in the new branch.
-3.
-
- Ensure that your code is well-documented and adheres to the project's coding style guidelines.
+3. Ensure that your code is well-documented and adheres to the project's coding style guidelines.
 4. Test your changes thoroughly.
 5. Submit a pull request, describing the nature of your contribution and any relevant information.
 
