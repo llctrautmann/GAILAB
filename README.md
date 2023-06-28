@@ -23,11 +23,11 @@ The main objectives of this project are as follows:
 The repository is organized as follows:
 
 - `data/`: This directory contains the audio datasets used for training and evaluation. Due to the size limitations of GitHub, the actual audio files are not included in the repository.
-- `models/`: This directory contains the implementation of the self-supervised machine learning architecture for phase approximation.
+- `src/`: This directory contains the implementation of the self-supervised machine learning architecture for phase approximation.
 - `reconstruction/`: This directory contains the code for combining the magnitude and approximated phase components to generate high-resolution reconstructions.
 - `evaluation/`: This directory contains scripts and notebooks for evaluating the quality and fidelity of the reconstructions.
 - `docs/`: This directory contains any relevant documentation, including user guides or tutorials.
-- `examples/`: This directory contains example code snippets or notebooks to demonstrate the usage of the implemented models and reconstruction techniques.
+- `notebooks/`: This directory contains example code snippets or notebooks to demonstrate the usage of the implemented models and reconstruction techniques.
 - `LICENSE`: The license file for this repository.
 - `README.md`: The main README file that provides an overview of the project.
 
