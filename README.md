@@ -24,6 +24,7 @@ The repository is organized as follows:
 
 - `data/`: This directory contains the audio datasets used for training and evaluation. Due to the size limitations of GitHub, the actual audio files are not included in the repository.
 - `src/`: This directory contains the implementation of the self-supervised machine learning architecture for phase approximation.
+- `deprecated/`: This directory contains old versions of the code base, kept for legacy purposes
 - `reconstruction/`: This directory contains the code for combining the magnitude and approximated phase components to generate high-resolution reconstructions.
 - `evaluation/`: This directory contains scripts and notebooks for evaluating the quality and fidelity of the reconstructions.
 - `docs/`: This directory contains any relevant documentation, including user guides or tutorials.
@@ -36,7 +37,7 @@ The repository is organized as follows:
 To get started with this project, please follow the instructions below:
 
 1. Clone the repository to your local machine.
-2. Install the required dependencies and libraries as specified in the documentation.
+2. Install the required dependencies and libraries as specified in the toml file.
 3. Obtain the audio datasets for training and evaluation. Ensure that the dataset files are stored in the appropriate directory (`data/`).
 4. Run the training script or notebook to train the self-supervised machine learning model on the audio datasets.
 5. Use the trained model to approximate the phase component of the audio signals and generate reconstructions by running the provided reconstruction script or notebook.
@@ -55,7 +56,5 @@ Contributions to this project are welcome. If you would like to contribute, plea
 4. Test your changes thoroughly.
 5. Submit a pull request, describing the nature of your contribution and any relevant information.
 
-## License
 
-This project is licensed under the [MIT License](LICENSE). Please refer to the license file for more information.
 
