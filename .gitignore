@@ -1,3 +1,5 @@
 .venv
 data/*
 .DS_Store
+src/__pycache__/*
+utils/__pycache__/*
