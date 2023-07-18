@@ -10,8 +10,16 @@ import random
 
 
 class AvianNatureSounds(Dataset):
-    def __init__(self, annotation_file=None, root_dir='../',mel_spectrogram = None,mode='wav',max_ms=5000):
-        self.annotation_file = pd.read_csv(annotation_file).sort_values('fileName')
+    def __init__(self, annotation_file=None, root_dir='../',mel_spectrogram = None,mode='wav',max_ms=int(1e+6),key='habitat'):
+        self.column = key
+        
+        if self.column != None:
+            try:
+                self.column in ['fileName','habitat']
+            except KeyError:
+                print(f'The available keys are: fileName,habitat')
+
+        self.annotation_file = pd.read_csv(annotation_file).sort_values(self.column)
         self.root_dir = root_dir
         self.mel_transformation = mel_spectrogram
         self.AmplitudeToDB = torchaudio.transforms.AmplitudeToDB()
@@ -23,25 +31,36 @@ class AvianNatureSounds(Dataset):
         return len(self.annotation_file)
 
     def __getitem__(self, index):
+        ####################################################################################
+        # Get wav files
+        ####################################################################################
         if self.mode == 'wav':
             audio_sample_path = os.path.join(self.root_dir,os.listdir(self.root_dir)[index])
-            label = self.annotation_file.iloc[index]['habitat']
+            label = self.annotation_file.iloc[index][self.column]
             signal, sr = torchaudio.load(audio_sample_path)
 
             return (signal, sr), label , audio_sample_path
         
+
+        ####################################################################################
+        # Get mel spectrograms
+        ####################################################################################
         elif self.mode == 'mel':
             audio_sample_path = os.path.join(self.root_dir,os.listdir(self.root_dir)[index])
-            label = self.annotation_file.iloc[index]['habitat']
+            label = self.annotation_file.iloc[index][self.column]
             signal, sr = torchaudio.load(audio_sample_path)
             signal = self.mel_transformation(signal)
 
-            return (signal, sr), label
-        
-        elif self.mode == 'stft': 
+            return (signal, sr), label     
+          
+
+        ####################################################################################
+        # Get stft spectrograms
+        ####################################################################################
+        elif self.mode == 'stft':
             audio_sample_path = os.path.join(self.root_dir,os.listdir(self.root_dir)[index])
-            label = self.annotation_file.iloc[index]['habitat']
-            signal, sr = torchaudio.load(audio_sample_path)
+            label = self.annotation_file.iloc[index][self.column]
+            signal, sr = self.pad_trunc(torchaudio.load(audio_sample_path),max_ms=self.max_ms)
 
             stft = torch.stft(signal, n_fft=1024, hop_length=512, normalized=True, return_complex=True)
 
@@ -50,13 +69,16 @@ class AvianNatureSounds(Dataset):
 
             return torch.cat([mag,phase],dim=0), label
         
+
+        ####################################################################################
+        # Get stft spectrograms
+        ####################################################################################
         elif self.mode == 'testing':
             audio_sample_path = os.path.join(self.root_dir,os.listdir(self.root_dir)[index])
-            label = self.annotation_file.iloc[index]['fileName']
+            label = self.annotation_file.iloc[index][self.column]
             signal, sr = self.pad_trunc(torchaudio.load(audio_sample_path), max_ms=self.max_ms)
 
-            stft = torch.stft(signal, n_fft=56, hop_length=16, normalized=True, return_complex=True)
-
+            stft = torch.stft(signal, n_fft=256, hop_length=16, normalized=True, return_complex=True)
             mag = self.AmplitudeToDB(torch.abs(stft))
             phase = torch.angle(stft)
 
