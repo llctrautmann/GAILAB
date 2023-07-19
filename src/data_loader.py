@@ -10,7 +10,18 @@ import random
 
 
 class AvianNatureSounds(Dataset):
-    def __init__(self, annotation_file=None, root_dir='../',mel_spectrogram = None,mode='wav',max_ms=int(1e+6),key='habitat'):
+    def __init__(self,
+                annotation_file=None,
+                root_dir='../',
+                mel_spectrogram = None,
+                mode='wav',max_ms=int(1e+6),
+                key='habitat',
+                n_fft=1024,
+                hop_length=512):
+        
+
+
+
         self.column = key
         
         if self.column != None:
@@ -25,6 +36,8 @@ class AvianNatureSounds(Dataset):
         self.AmplitudeToDB = torchaudio.transforms.AmplitudeToDB()
         self.mode = mode
         self.max_ms = max_ms
+        self.n_fft = n_fft
+        self.hop_length = hop_length
 
 
     def __len__(self):
@@ -62,12 +75,12 @@ class AvianNatureSounds(Dataset):
             label = self.annotation_file.iloc[index][self.column]
             signal, sr = self.pad_trunc(torchaudio.load(audio_sample_path),max_ms=self.max_ms)
 
-            stft = torch.stft(signal, n_fft=1024, hop_length=512, normalized=True, return_complex=True)
+            stft = torch.stft(signal, n_fft=self.n_fft, hop_length=self.hop_length, normalized=True, return_complex=True)
 
             mag = self.AmplitudeToDB(torch.abs(stft))
             phase = torch.angle(stft)
 
-            return torch.cat([mag,phase],dim=0), label
+            return torch.cat([mag,phase],dim=0), mag, label
         
 
         ####################################################################################
@@ -93,8 +106,7 @@ class AvianNatureSounds(Dataset):
     def pad_trunc(aud, max_ms):
         sig, sr = aud
         num_rows, sig_len = sig.shape
-        max_len = sr//1000 * max_ms
-
+        max_len = int(sr//1000 * max_ms)
         if (sig_len > max_len):
             # Truncate the signal to the given length
             sig = sig[:,:max_len]
