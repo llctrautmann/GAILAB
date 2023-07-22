@@ -8,7 +8,10 @@ def plot_spectrograms(batch: torch.Tensor,magnitude=True):
         librosa.display.specshow(batch[0][0].numpy(),
                                 sr=48000,
                                 x_axis='time',
-                                y_axis='log')
+                                y_axis='linear',
+                                # vmin=0,
+                                # vmax=44100//2
+                                )
         plt.colorbar(format="%+2.f")
         plt.show()
     else:
@@ -16,7 +19,7 @@ def plot_spectrograms(batch: torch.Tensor,magnitude=True):
                                 sr=48000,
                                 x_axis='time',
                                 y_axis='linear',
-                                cmap='Blues'
+                                cmap='Blues',
                                 )
         plt.colorbar(format="%+2.f")
         plt.show()
