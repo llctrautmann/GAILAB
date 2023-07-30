@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import librosa
 import torch
 
-def plot_spectrograms(batch: torch.Tensor,magnitude=True):
-    plt.figure(figsize=(10,9))
+def plot_spectrograms(batch: torch.Tensor,magnitude=True,width=10,height=3):
+    plt.figure(figsize=(width,height))
     if magnitude:
         librosa.display.specshow(batch[0][0].numpy(),
                                 sr=48000,
