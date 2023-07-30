@@ -54,6 +54,27 @@ class AvianNatureSounds(Dataset):
         ####################################################################################
         # Get stft spectrograms
         ####################################################################################
+        if self.mode == 'stft_deprecated':
+            audio_sample_path = os.path.join(self.root_dir,os.listdir(self.root_dir)[index])
+            label = self.annotation_file.iloc[index][self.column]
+            signal, sr = torchaudio.load(audio_sample_path)
+
+            signal = self.clip(signal, sr, self.length,fixed_limit=self.fixed_limit)
+            stft = torch.stft(signal, n_fft=self.n_fft, hop_length=self.hop_length,win_length=self.n_fft, normalized=False, return_complex=True)
+
+            # librosa_stft = librosa.stft(signal.numpy(), n_fft=self.n_fft, hop_length=self.hop_length)
+            stft = stft[1:][:]
+            
+            # mag = self.AmplitudeToDB(torch.abs(stft)) 25 Jul 2023 @ 12:21:38 ## CHANGED ###
+            mag = torch.abs(stft)
+            phase = torch.angle(stft)
+
+            mag, phase = mag.unsqueeze(0), phase.unsqueeze(0)
+
+
+            return torch.cat([mag,phase],dim=0), mag, label
+        
+
         if self.mode == 'stft':
             audio_sample_path = os.path.join(self.root_dir,os.listdir(self.root_dir)[index])
             label = self.annotation_file.iloc[index][self.column]
@@ -64,13 +85,18 @@ class AvianNatureSounds(Dataset):
 
             # librosa_stft = librosa.stft(signal.numpy(), n_fft=self.n_fft, hop_length=self.hop_length)
             stft = stft[1:][:]
-            mag = self.AmplitudeToDB(torch.abs(stft))
-            phase = torch.angle(stft)
+            
+            mag = self.AmplitudeToDB(torch.abs(stft)) # 25 Jul 2023 @ 12:21:38 ## CHANGED ###
+            
+            real_part = stft.real
+            imag_part = stft.imag
 
-            mag, phase = mag.unsqueeze(0), phase.unsqueeze(0)
 
 
-            return torch.cat([mag,phase],dim=0), mag, label
+            real_part, imag_part = real_part.unsqueeze(0), imag_part.unsqueeze(0)
+
+
+            return torch.cat([real_part,imag_part],dim=0),mag, label
 
 
 
@@ -115,9 +141,5 @@ class AvianNatureSounds(Dataset):
             sig = audio_signal[:, offset:(offset+length)]
 
             return sig
-        else:
+        elif fixed_limit is None:
             return audio_signal
-
-
-
-
