@@ -1,6 +1,6 @@
 import torch
 import os
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 import pandas as pd
 import torchaudio
 import random
@@ -77,46 +77,22 @@ class AvianNatureSounds(Dataset):
             else:
                 pass
 
-            # print(f'{signal.shape} = original signal shape')
             # Clip the signal to the desired length
             signal = self.clip(signal, sr, self.length,fixed_limit=self.fixed_limit)
             # print(f'{signal.shape} = clipped signal shape')
 
-
             stft = torch.stft(signal, n_fft=self.n_fft, hop_length=self.hop_length,win_length=self.n_fft, normalized=False, return_complex=True)
-            # Retransform the magnitude spectrogram back using GLA
-            _mag = torch.abs(stft) 
-            _signal = self.griffin_lim(_mag)
-            _signal = _signal.reshape(1,-1) # required to get the shape right for the stft function (1,-1)
 
 
-            # INSERT FUNCTION TO GET THE LENGTH OF THE SIGNAL EQUAL TO THE ORIGINAL SIGNAL
+            # Add complex Gaussian noise to the complex tensor
+            noise_real = torch.randn_like(stft.real)
+            noise_imag = torch.randn_like(stft.imag)
+            noisy_sig = stft + (noise_real + 1j * noise_imag)
 
-            self._update_signal_length(_signal.shape[-1])
-            _signal = self._resize_signal_length(_signal,self.signal_length)
 
-            # print(f'{_signal.shape} = resized signal shape after GLA')
+            magnitude = torch.abs(stft) # 25 Jul 2023 @ 12:21:38 ### CHANGED ###
 
-            _stft = torch.stft(_signal, n_fft=self.n_fft, hop_length=self.hop_length,win_length=self.n_fft, normalized=False, return_complex=True)
-
-            # print(f'{_stft.shape} = stft shape after GLA')
-
-            magnitude = self.AmplitudeToDB(torch.abs(stft)) # 25 Jul 2023 @ 12:21:38 ### CHANGED ###
-
-            # REMOVE THE FIRST FREQUENCY BIN AND RETURN THE COMPLEX SPECTROGRAM AS TWO REAL-VALUED TENSORS
-            # _stft = _stft[:,1:,...]
-            # magnitude = magnitude[:,1:,...]
-            # print(f'{_stft.shape} = stft shape after removing first frequency bin')
-            # print(f'{magnitude.shape} = magnitude shape after removing first frequency bin')
-
-            real_part = _stft.real
-            imag_part = _stft.imag
-
-            # real_part, imag_part = real_part.unsqueeze(1), imag_part.unsqueeze(1)
-
-            # RETURN THE REAL AND IMAGINARY PARTS OF THE COMPLEX SPECTROGRAM AND THE MAGNITUDE SPECTROGRAM AND THE LABEL
-            # return torch.cat([real_part,imag_part],dim=0), magnitude , label
-            return _stft, magnitude , label
+            return stft, noisy_sig,  magnitude , label
 
 
     @staticmethod
@@ -177,4 +153,16 @@ class AvianNatureSounds(Dataset):
         transform = torchaudio.transforms.Resample(orig_freq=orig_freq, new_freq=new_freq)
         return transform(waveform)
 
+
+ds = AvianNatureSounds(annotation_file_path=hp.annotation_file_path,
+                       root_dir=hp.root_dir,
+                       key=hp.key,
+                       mode=hp.mode,
+                       length=hp.length,
+                       sampling_rate=hp.sampling_rate,
+                       n_fft=hp.n_fft,
+                       hop_length=hp.hop_length,
+                       mel_spectrogram=hp.mel_spectrogram,
+                       verbose=hp.verbose,
+                       fixed_limit=False)
 
