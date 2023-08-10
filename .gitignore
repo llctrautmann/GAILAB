@@ -3,3 +3,5 @@ data/*
 .DS_Store
 src/__pycache__/*
 utils/__pycache__/*
+collect_env.py
+DGLim/data/*
