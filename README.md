@@ -1,4 +1,4 @@
-# Audio Phase Reconstruction
+# Audio Phase Reconstruction with Machine Learning Techniques
 
 This repository contains the implementation of a project that explores the use of self-supervised machine learning architectures to approximate the phase component of a Discrete Fourier Transform (DFT) for rendering high-resolution reconstructions of ecosystem audio recordings. The goal of this project is to enable the audible interpretation of network outputs generated through reconstruction learning in the field of ecoacoustics.
 
